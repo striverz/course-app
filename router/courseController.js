@@ -25,7 +25,44 @@ courseController.post("/register", authAdmin, async (req, res) => {
     });
   }
 });
-courseController.get("/preview", authUser, async (req, res) => {
+
+courseController.patch("/update", authAdmin, async (req, res) => {
+  try {
+    const { price, courseId } = req.body;
+
+    const updatedCourse = await CourseModel.findByIdAndUpdate(
+      courseId,
+      { price },
+      { new: true }
+    );
+
+    res.json({
+      message: "Course Updated Successfully",
+    });
+  } catch (err) {
+    res.status(401).json({
+      message: err.message,
+    });
+  }
+});
+
+courseController.delete("/delete", authAdmin, async (req, res) => {
+  try {
+    const courseId = req.body.courseId;
+    const course = await CourseModel.findOne({ _id: courseId });
+    await CourseModel.deleteOne({ _id: courseId });
+
+    res.json({
+      message: `Deleted the course ${course.title}`,
+    });
+  } catch (err) {
+    res.status(401).json({
+      message: err.message,
+    });
+  }
+});
+
+courseController.get("/preview", async (req, res) => {
   try {
     const courses = await CourseModel.find({});
     res.json({
@@ -41,14 +78,3 @@ courseController.get("/preview", authUser, async (req, res) => {
 module.exports = {
   courseController,
 };
-
-courseController.patch("/update", authAdmin, async (req, res) => {
-  res.json({
-    message: "Course Updated Successfully",
-  });
-});
-courseController.patch("/delete", authAdmin, async (req, res) => {
-  res.json({
-    message: "Course Deleted Successfully",
-  });
-});

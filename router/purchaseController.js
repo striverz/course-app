@@ -1,6 +1,7 @@
 const express = require("express");
 const { authUser } = require("../middlewares/authUser");
 const { PurchaseModel } = require("../models/purchaseModel");
+const { CourseModel } = require("../models/courseModel");
 
 const purchaseController = express.Router();
 
@@ -27,24 +28,20 @@ purchaseController.post("/purchase", authUser, async (req, res) => {
 purchaseController.get("/purchase", authUser, async (req, res) => {
   try {
     const userId = req.userId;
+
     const myPurchases = await PurchaseModel.find({ userId });
 
-    res.json({
-      message: "purchased courses",
-      courses: myPurchases,
-    });
-  } catch (err) {
-    res.status(401).json({
-      message: err.message,
-    });
-  }
-});
+    const allCourses = await CourseModel.find({});
 
-purchaseController.get("/preview", async (req, res) => {
-  try {
-    const courses = await CourseModel.find({});
+    const purchasedCourseIds = myPurchases.map((p) => p.courseId.toString());
+
+    const purchasedCourses = allCourses.filter((course) =>
+      purchasedCourseIds.includes(course._id.toString())
+    );
+
     res.json({
-      courses: courses,
+      message: "My Purchased courses",
+      courses: purchasedCourses,
     });
   } catch (err) {
     res.status(401).json({
