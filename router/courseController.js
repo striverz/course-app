@@ -4,15 +4,17 @@ const { authAdmin } = require("../middlewares/authAdmin");
 const { CourseModel } = require("../models/courseModel");
 const courseController = express.Router();
 
-courseController.post("/register", authUser, async (req, res) => {
+courseController.post("/register", authAdmin, async (req, res) => {
   try {
     const { imageUrl, title, price, description } = req.body;
+    const adminId = req.adminId;
 
     await CourseModel.create({
       imageUrl,
       title,
       price,
       description,
+      creatorId: adminId,
     });
     res.json({
       message: "Course Created Successfully",
@@ -39,3 +41,14 @@ courseController.get("/preview", authUser, async (req, res) => {
 module.exports = {
   courseController,
 };
+
+courseController.patch("/update", authAdmin, async (req, res) => {
+  res.json({
+    message: "Course Updated Successfully",
+  });
+});
+courseController.patch("/delete", authAdmin, async (req, res) => {
+  res.json({
+    message: "Course Deleted Successfully",
+  });
+});

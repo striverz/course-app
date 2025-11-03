@@ -4,11 +4,13 @@ const authAdmin = async (req, res, next) => {
   try {
     const { token } = req.cookies;
     if (!token) throw new Error("Admin Not loggined");
-    const isValidToken = jwt.verify(token, process.env.JWT_ADMIN_CODE);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    if (!isValidToken) throw new Error("Invalid Token");
+    if (!decoded) throw new Error("Invalid Token");
 
-    const decodedId = isValidToken.id;
+    if (decoded.role !== "admin") throw new Error("Access denied: Admin only");
+
+    const decodedId = decoded.id;
 
     req.adminId = decodedId;
     next();

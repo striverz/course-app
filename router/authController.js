@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 const authController = express.Router();
 
 authController.post("/signup", async (req, res) => {
-  const { email, password, firstName, lastName } = req.body; //zod validation require
+  const { email, password, firstName, lastName, role } = req.body; //zod validation require
   const hashPassword = await bcrypt.hash(password, 10);
 
   try {
@@ -14,6 +14,7 @@ authController.post("/signup", async (req, res) => {
       lastName: lastName,
       email: email,
       password: hashPassword,
+      role: role,
     });
     res.json({
       message: `Signup Successful with the user ${firstName}`,
@@ -39,8 +40,9 @@ authController.post("/signin", async (req, res) => {
     const token = jwt.sign(
       {
         id: user._id,
+        role: user.role,
       },
-      process.env.JWT_USER_CODE
+      process.env.JWT_SECRET
     );
 
     res.cookie("token", token);

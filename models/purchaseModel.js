@@ -10,3 +10,9 @@ const purchaseSchema = new Schema({
     type: objectId,
   },
 });
+
+const PurchaseModel = mongoose.model("purchase", purchaseSchema);
+
+module.exports = {
+  PurchaseModel,
+};

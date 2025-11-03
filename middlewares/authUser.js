@@ -5,10 +5,10 @@ const authUser = (req, res, next) => {
     const { token } = req.cookies;
     if (!token) throw new Error("User Not loggined");
 
-    const isValidToken = jwt.verify(token, process.env.JWT_USER_CODE);
-    if (!isValidToken) throw new Error("Token is Invalid");
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    if (!decoded) throw new Error("Token is Invalid");
 
-    const decodedId = isValidToken.id;
+    const decodedId = decoded.id;
     req.userId = decodedId;
     next();
   } catch (err) {
