@@ -16,6 +16,8 @@ authController.post("/signup", async (req, res) => {
       password: hashPassword,
       role: role,
     });
+    const userFound = await UserModel.findOne({ email: email });
+    if (userFound) throw new Error("User with this email is Already existed");
     res.json({
       message: `Signup Successful with the user ${firstName}`,
     });
